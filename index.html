@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>facebookSDK</title>
+  <link rel="stylesheet" href="css/bootstrap.min.css">
+</head>
+<body>
+
+
+
+	
+
+
+
+<script>
+  window.fbAsyncInit = function() {
+    FB.init({
+      appId      : '294108148435120',
+      cookie     : true,
+      xfbml      : true,
+      version    : 'v7.0'
+    });
+      
+    FB.getLoginStatus(function(response) {
+    statusChangeCallback(response);
+});  
+      
+  };
+
+  (function(d, s, id){
+     var js, fjs = d.getElementsByTagName(s)[0];
+     if (d.getElementById(id)) {return;}
+     js = d.createElement(s); js.id = id;
+     js.src = "https://connect.facebook.net/en_US/sdk.js";
+     fjs.parentNode.insertBefore(js, fjs);
+   }(document, 'script', 'facebook-jssdk'));
+
+  function statusChangeCallback(response){
+  	if(response.status ==='connected'){
+  		console.log("AUTH");
+      setElement(true);
+  		TestApi();
+  	}else{
+  		console.log("NOT AUTH");
+      setElement(false);
+  	}
+  };
+
+
+function checkLoginState() {
+  FB.getLoginStatus(function(response) {
+    statusChangeCallback(response);
+  });
+};
+
+function TestApi(){
+	FB.api('me?fields=id,name,birthday,location,email',function(response){
+		if(response && !response.error){
+      setElement(true);
+			display(response);
+		}
+    else{
+      setElement(false);
+    }
+		
+	})
+};
+
+function setElement(bool){
+  if(bool){
+    document.querySelector("#fbicon").style.display="none";
+    document.querySelector(".logout").style.display="block";
+  }else{
+    document.querySelector("#fbicon").style.display="block";
+    document.querySelector(".logout").style.display="none";
+  }
+
+}
+
+function Logout(){
+  FB.logout(function(response){
+    window.location.reload();
+  });
+}
+
+function display(response){
+  let output=document.querySelector(".display");
+
+  output.innerHTML =`<div class="card bg-danger text-light mt-4 ml-auto mr-auto" style="width:35rem;">
+  <ul class="list-group list-group-flush">
+
+    <li class="list-group-item"><strong>Name : <strong>${response['name']}</li>
+    <li class="list-group-item"><strong>Birthday :<strong>${response['birthday']}</li>
+    <li class="list-group-item"><strong>Location  :<strong>${response['location']['name']}</li>
+    <li class="list-group-item"><strong>Email  :<strong>${response['email']}</li>
+  </ul>
+</div> `
+
+}
+</script>
+
+<!-- Navbar -->
+<nav class="navbar navbar-primary bg-info">
+  <a class="navbar-brand text-light">Social</a>
+  
+  <span class="ml-auto">
+      <fb:login-button 
+      id="fbicon"
+    scope="public_profile,email"
+    onlogin="checkLoginState();">
+    </fb:login-button>
+
+    <span class="btn btn-info text-light logout" onclick="Logout()">Logout</span>
+</span>
+</nav>
+
+
+
+<!-- Card -->
+
+<div class="display">
+  
+
+</div>
+
+</body>
+</html>
